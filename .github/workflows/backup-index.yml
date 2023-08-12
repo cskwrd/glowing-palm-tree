@@ -1,4 +1,4 @@
-name: Create index html backup snippet
+name: Create index backup
 
 on:
   schedule:
@@ -13,16 +13,21 @@ jobs:
 
       - name: Download and extract latest htmlq release
         run: |
-          curl -L "https://github.com/mgdm/htmlq/releases/latest/download/htmlq-x86_64-linux.tar.gz" | tar -xz
-          chmod +x htmlq
+          wget -qO /tmp/pup.zip https://github.com/ericchiang/pup/releases/latest/download/pup_v0.4.0_linux_amd64.zip
+          unzip /tmp/pup.zip
+          chmod u+x pup
 
       - name: Process webpage and commit changes
         run: |
-          curl -s https://www.srrdb.com/pre/index | ./htmlq --pretty 'table > tbody' > data-index.snippet.html
+          curl -s https://www.srrdb.com/pre/index > /tmp/index.html
+          cat /tmp/index.html | ./pup --color 'table > tbody > tr > td:first-child > a text{}' > /tmp/day.txt
+          cat /tmp/index.html | ./pup --color 'table > tbody > tr > td:first-child > a attr{href}' > /tmp/href.txt
+          echo "day,path" > data-index.csv
+          paste -d',' /tmp/day.txt /tmp/href.txt >> data-index.csv
           git config user.email "actions@github.com"
           git config user.name "GitHub Actions"
-          git add data-index.snippet.html
-          git commit -m "Update data-index.snippet.html" && git push || echo "No changes to commit"
+          git add data-index.csv
+          git commit -m "Update data-index.csv" && git push || echo "No changes to commit"
 
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
+      # - name: Setup tmate session
+      #   uses: mxschmitt/action-tmate@v3
