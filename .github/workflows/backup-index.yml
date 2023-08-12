@@ -23,3 +23,6 @@ jobs:
           git config user.name "GitHub Actions"
           git add data-index.snippet.html
           git commit -m "Update data-index.snippet.html" && git push || echo "No changes to commit"
+
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
