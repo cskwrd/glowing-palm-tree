@@ -45,10 +45,6 @@ jobs:
           tail -n 30 /tmp/curl.urls
           echo -e "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"
           tail -n 30 /tmp/curl2.urls
-          # git config user.email "actions@github.com"
-          # git config user.name "GitHub Actions"
-          # git add data-index.csv
-          # git commit -m "Update data-index.csv" && git push || echo "No changes to commit"
 
       # - name: Setup tmate session
       #   uses: mxschmitt/action-tmate@v3
