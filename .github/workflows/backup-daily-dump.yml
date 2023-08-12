@@ -30,21 +30,11 @@ jobs:
             formatted_date=$(date -d "$day" +"%Y-%m-%d" 2>/dev/null)
             full_url="$BASE_URL$path"
             if [[ -n "$formatted_date" ]]; then
-              cat << EOF >> /tmp/curl.urls
-          url = "$full_url"
-          output = "/tmp/data/${formatted_date}.html"
-          
-          EOF
-              cat <<- EOF >> /tmp/curl2.urls
-              url = "$full_url"
-              output = "/tmp/data/${formatted_date}.html"
-              
-              EOF
+              echo "url = \"${full_url}\"" >> /tmp/curl.urls
+              echo -e "output = \"/tmp/data/${formatted_date}.html\"\n" >> /tmp/curl.urls
             fi
           done < data-index.csv
           tail -n 30 /tmp/curl.urls
-          echo -e "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"
-          tail -n 30 /tmp/curl2.urls
 
       # - name: Setup tmate session
       #   uses: mxschmitt/action-tmate@v3
