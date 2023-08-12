@@ -29,12 +29,23 @@ jobs:
           do
             formatted_date=$(date -d "$day" +"%Y-%m-%d" 2>/dev/null)
             full_url="$BASE_URL$path"
+
             if [[ -n "$formatted_date" ]]; then
+
+              # there might be a way to do this with a heredoc but I'm not sure what the action syntax would be
               echo "url = \"${full_url}\"" >> /tmp/curl.urls
               echo -e "output = \"/tmp/data/${formatted_date}.html\"\n" >> /tmp/curl.urls
+
             fi
           done < data-index.csv
-          tail -n 30 /tmp/curl.urls
+
+          mkdir -p /tmp/data/
+
+          tail -n 120 /tmp/curl.urls > /tmp/test.urls
+
+          curl --rate "${REQUESTS_PER_MINUTE}/m" -K /tmp/test.urls
+
+          ls -la /tmp/data
 
       # - name: Setup tmate session
       #   uses: mxschmitt/action-tmate@v3
