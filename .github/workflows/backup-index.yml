@@ -1,0 +1,25 @@
+name: Create index html backup snippet
+
+on:
+  schedule:
+    - cron: '6 7 * * *'  # Schedule at 7:06 am UTC
+  workflow_dispatch:  # Allows you to run this workflow manually from the Actions tab
+
+jobs:
+  download-process-index-html:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Download and extract latest htmlq release
+        run: |
+          curl -L "https://github.com/mgdm/htmlq/releases/latest/download/htmlq-x86_64-linux.tar.gz" | tar -xz
+          chmod +x htmlq
+
+      - name: Process webpage and commit changes
+        run: |
+          curl -s https://www.srrdb.com/pre/index | ./htmlq --pretty 'table > tbody' > data-index.snippet.html
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Actions"
+          git add data-index.snippet.html
+          git commit -m "Update data-index.snippet.html" || echo "No changes to commit"
