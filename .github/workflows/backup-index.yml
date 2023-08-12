@@ -13,7 +13,8 @@ jobs:
 
       - name: Download and extract latest htmlq release
         run: |
-          wget -qO /tmp/pup.zip https://github.com/ericchiang/pup/releases/latest/download/pup_v0.4.0_linux_amd64.zip
+          LATEST_RELEASE=$(curl -s https://api.github.com/repos/ericchiang/pup/releases/latest | grep "tag_name" | cut -d'"' -f4)
+          wget -qO /tmp/pup.zip https://github.com/ericchiang/pup/releases/download/${LATEST_RELEASE}/pup_${LATEST_RELEASE}_linux_amd64.zip
           unzip /tmp/pup.zip
           chmod u+x pup
 
@@ -22,8 +23,7 @@ jobs:
           curl -s https://www.srrdb.com/pre/index > /tmp/index.html
           cat /tmp/index.html | ./pup --color 'table > tbody > tr > td:first-child > a text{}' > /tmp/day.txt
           cat /tmp/index.html | ./pup --color 'table > tbody > tr > td:first-child > a attr{href}' > /tmp/href.txt
-          echo "day,path" > data-index.csv
-          paste -d',' /tmp/day.txt /tmp/href.txt >> data-index.csv
+          paste -d',' /tmp/day.txt /tmp/href.txt > data-index.csv
           git config user.email "actions@github.com"
           git config user.name "GitHub Actions"
           git add data-index.csv
