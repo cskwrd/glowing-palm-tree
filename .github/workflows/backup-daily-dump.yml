@@ -1,0 +1,54 @@
+name: Create daily dump backup
+
+on:
+  # push:
+  #   paths:
+  #     - 'data-index.csv'
+  workflow_dispatch:  # Allows you to run this workflow manually from the Actions tab
+
+env:
+  BASE_URL: "https://www.example.com"
+  REQUESTS_PER_MINUTE: 20
+
+jobs:
+  download-process-daily-html:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      # - name: Download and extract latest pup release
+      #   run: |
+      #     LATEST_RELEASE=$(curl -s https://api.github.com/repos/ericchiang/pup/releases/latest | grep "tag_name" | cut -d'"' -f4)
+      #     wget -qO /tmp/pup.zip https://github.com/ericchiang/pup/releases/download/${LATEST_RELEASE}/pup_${LATEST_RELEASE}_linux_amd64.zip
+      #     unzip /tmp/pup.zip
+      #     chmod u+x pup
+
+      - name: Process webpages and commit changes
+        run: |
+          while IFS=, read -r day path
+          do
+            formatted_date=$(date -d "$day" +"%Y-%m-%d" 2>/dev/null)
+            full_url="$BASE_URL$path"
+            if [[ -n "$formatted_date" ]]; then
+              cat << EOF >> /tmp/curl.urls
+          url = "$full_url"
+          output = "/tmp/data/${formatted_date}.html
+          
+          EOF
+              cat <<- EOF >> /tmp/curl2.urls
+              url = "$full_url"
+              output = "/tmp/data/${formatted_date}.html
+              
+              EOF
+            fi
+          done < data-index.csv
+          tail -n 30 /tmp/curl.urls
+          echo -e "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"
+          tail -n 30 /tmp/curl2.urls
+          # git config user.email "actions@github.com"
+          # git config user.name "GitHub Actions"
+          # git add data-index.csv
+          # git commit -m "Update data-index.csv" && git push || echo "No changes to commit"
+
+      # - name: Setup tmate session
+      #   uses: mxschmitt/action-tmate@v3
