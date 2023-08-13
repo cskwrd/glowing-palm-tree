@@ -43,7 +43,7 @@ jobs:
 
           tail -n 120 /tmp/curl.urls > /tmp/test.urls
 
-          curl --rate "${REQUESTS_PER_MINUTE}/m" -K /tmp/test.urls
+          # curl --rate "${REQUESTS_PER_MINUTE}/m" -K /tmp/test.urls
 
           ls -la /tmp/data
 
